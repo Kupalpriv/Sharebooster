@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SharedBooster</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0f172a;
+      color: #f1f5f9;
+      line-height: 1.6;
+    }
+    header {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      padding: 1.5rem;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #f8fafc;
+    }
+    header p {
+      margin: 0.5rem 0 0;
+      font-size: 1.2rem;
+      color: #e2e8f0;
+    }
+    main {
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 2rem;
+      background: #1e293b;
+      border-radius: 10px;
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+    }
+    main h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+      font-size: 2rem;
+      color: #fbbf24;
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+    label {
+      font-size: 1.1rem;
+    }
+    input, button {
+      padding: 0.8rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+    }
+    input {
+      background: #334155;
+      color: #f1f5f9;
+    }
+    button {
+      background: #3b82f6;
+      color: #f8fafc;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .response {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 5px;
+    }
+    .response.success {
+      background: #34d399;
+      color: #065f46;
+    }
+    .response.error {
+      background: #f87171;
+      color: #7f1d1d;
+    }
+    footer {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      text-align: center;
+      background: #1e293b;
+      border-top: 2px solid #3b82f6;
+    }
+    footer p {
+      margin: 0.5rem 0;
+    }
+    footer a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>SharedBooster</h1>
+    <p>Share booster ni kupal</p>
+  </header>
+  <main>
+    <h2>Share a Facebook Post</h2>
+    <form id="shareForm">
+      <label for="cookie">Facebook Cookie:</label>
+      <input type="text" id="cookie" placeholder="Enter your Facebook cookie" required />
+
+      <label for="url">Post URL:</label>
+      <input type="url" id="url" placeholder="Enter Facebook post URL" required />
+
+      <label for="amount">Number of Shares:</label>
+      <input type="number" id="amount" placeholder="Enter number of shares" required />
+
+      <label for="interval">Interval (seconds):</label>
+      <input type="number" id="interval" placeholder="Enter interval in seconds" step="0.1" required />
+
+      <button type="submit">Submit</button>
+    </form>
+    <div id="response" class="response" style="display: none;"></div>
+  </main>
+  <footer>
+    <p>&copy; 2024 SharedBooster</p>
+    <p>Created by <a href="https://www.facebook.com/profile.php?id=100093264610467" target="_blank">Churchill</a></p>
+  </footer>
+  <script>
+    const form = document.getElementById('shareForm');
+    const responseDiv = document.getElementById('response');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      responseDiv.style.display = 'none';
+
+      const cookie = document.getElementById('cookie').value;
+      const url = document.getElementById('url').value;
+      const amount = document.getElementById('amount').value;
+      const interval = document.getElementById('interval').value;
+
+      try {
+        const response = await fetch('https://spamsharev1api.onrender.com/api/submit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ cookie, url, amount: parseInt(amount), interval: parseFloat(interval) }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          responseDiv.textContent = `Share request successful! ${JSON.stringify(data)}`;
+          responseDiv.className = 'response success';
+        } else {
+          responseDiv.textContent = `Error: ${data.message || 'Something went wrong'}`;
+          responseDiv.className = 'response error';
+        }
+      } catch (error) {
+        responseDiv.textContent = `Error: ${error.message}`;
+        responseDiv.className = 'response error';
+      }
+      responseDiv.style.display = 'block';
+    });
+  </script>
+</body>
+</html>
