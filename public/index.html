@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Auto Share</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" />
+  <style>
+    body {
+      font-family: Roboto, sans-serif;
+      padding: 40px;
+      max-width: 600px;
+      margin: auto;
+      background: #f5f5f5;
+    }
+    input, button {
+      display: block;
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      background-color: #1877f2;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    pre {
+      background: #eee;
+      padding: 10px;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>Auto Share to Facebook</h1>
+  <form id="shareForm">
+    <input type="text" id="link" placeholder="Post link (public)" required />
+    <input type="text" id="token" placeholder="Access token" required />
+    <input type="number" id="count" placeholder="Number of shares" required min="1" />
+    <button type="submit">Start Sharing</button>
+  </form>
+  <pre id="response"></pre>
+  <script>
+    document.getElementById('shareForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const link = document.getElementById('link').value;
+      const token = document.getElementById('token').value;
+      const count = parseInt(document.getElementById('count').value);
+      const output = document.getElementById('response');
+      output.textContent = '';
+      let success = 0;
+      for (let i = 0; i < count; i++) {
+        const res = await fetch(`/share?link=${encodeURIComponent(link)}&token=${token}`);
+        const data = await res.json();
+        if (data.success) {
+          success++;
+          output.textContent += `Shared #${success} - ID: ${data.id}\n`;
+        } else {
+          output.textContent += `Failed - ${data.error}\n`;
+        }
+        await new Promise(r => setTimeout(r, 1500));
+      }
+    };
+  </script>
+</body>
+</html>
